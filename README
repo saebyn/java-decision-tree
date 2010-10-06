@@ -1,0 +1,49 @@
+
+decision-tree
+=============
+
+Java classes to construct and apply a decision tree to an data/attribute set. Allows for pluggable algorithms to construct tree.
+
+DecisionTree class
+------------------
+
+setAlgorithm(DecisionTreeAlgorithm    algorithm)
+
+addExample(boolean result, list(attribute strings))
+
+apply(list(attribute strings))
+
+
+Internal classes
+----------------
+
+DecisionDatum: list(pair(boolean[outcome] + AttributeSet))
+               AttributeSet: map(id string: boolean)
+
+* method: count_positive_examples(id string, where=map(id string: boolean))
+
+* method: count_negative_examples(id string, where=map(id string: boolean))
+
+* method: count_examples(id string, where=map(id string: boolean))
+
+* method: list(id strings) attributes()
+
+The `where` argument defaults to an empty mapping, but when specified only
+includes outcomes where the given attributes have the given boolean value.
+
+
+ID3 Algorithm
+--------------
+
+external methods provided:
+
+* constructor(DecisionDatum)
+
+* string nextFeature(path=map(id string: boolean))
+
+The `path` argument is a mapping of attributes given by the path from the
+decision tree root to the current (temporary) leaf, including the leaf itself.
+Throws a YesDecisionLeafException or a NoDecisionLeafException when no further
+leaves need to be added for the given path. Otherwise, returns an attribute
+id string for the next decision node.
+

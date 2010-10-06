@@ -1,0 +1,52 @@
+<project name="dt" basedir="." default="junit">
+  <property name="src.dir" value="src" />
+  <property name="build.dir" value="build" />
+  <property name="classes.dir" value="${build.dir}/classes" />
+  <property name="jar.dir" value="${build.dir}/jar" />
+  <property name="report.dir" value="${build.dir}/junitreport"/>
+  <property name="lib.dir" value="lib" />
+
+  <path id="classpath">
+    <fileset dir="${lib.dir}" includes="**/*.jar" />
+  </path>
+
+  <target name="clean">
+    <delete dir="${build.dir}" />
+  </target>
+
+  <target name="compile">
+    <mkdir dir="${classes.dir}" />
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" />
+  </target>
+
+  <target name="jar" depends="compile">
+    <mkdir dir="${jar.dir}" />
+    <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
+      <manifest>
+      </manifest>
+    </jar>
+  </target>
+  
+  <target name="junit" depends="jar">
+    <mkdir dir="${report.dir}"/>
+    <junit printsummary="yes">
+      <classpath>
+        <path refid="classpath" />
+        <path id="application" location="${jar.dir}/${ant.project.name}.jar" />
+      </classpath>
+
+      <formatter type="xml"/>
+
+      <batchtest fork="yes"  todir="${report.dir}">
+        <fileset dir="${src.dir}" includes="*Test.java" />
+      </batchtest>
+    </junit>
+  </target>
+
+  <target name="junitreport">
+    <junitreport todir="${report.dir}">
+      <fileset dir="${report.dir}" includes="TEST-*.xml" />
+      <report todir="${report.dir}" />
+    </junitreport>
+  </target>
+</project>
