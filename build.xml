@@ -16,7 +16,7 @@
 
   <target name="compile">
     <mkdir dir="${classes.dir}" />
-    <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" />
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" includeantruntime="false" />
   </target>
 
   <target name="jar" depends="compile">
@@ -29,15 +29,15 @@
   
   <target name="junit" depends="jar">
     <mkdir dir="${report.dir}"/>
-    <junit printsummary="yes">
+    <junit printsummary="yes" showOutput="true">
       <classpath>
         <path refid="classpath" />
         <path id="application" location="${jar.dir}/${ant.project.name}.jar" />
       </classpath>
 
-      <formatter type="xml"/>
+      <formatter type="xml" />
 
-      <batchtest fork="yes"  todir="${report.dir}">
+      <batchtest fork="yes" todir="${report.dir}">
         <fileset dir="${src.dir}" includes="*Test.java" />
       </batchtest>
     </junit>
