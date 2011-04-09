@@ -2,6 +2,13 @@
 decision-tree
 =============
 
-This package consists of several Java classes to construct and apply a decision tree to a attribute set. It allows for pluggable algorithms to construct tree. The decision tree is constructed from a series of examples of attributes, where each example either has each of the attributes or does not, and each has a specified outcome of either true or false. The resulting decision tree is a binary tree where each leaf node represents the presents or absence of each attribute named along the path to the root node and the resulting outcome for the set of decisions.
+This package consists of several Java classes to construct and apply a decision
+tree to a attribute set. It allows for pluggable algorithms to construct the
+tree. The decision tree is constructed from a series of examples of attributes,
+where each example either has each of the attributes or does not, and each has
+a specified outcome of either true or false. The resulting decision tree is a
+binary tree where each leaf node represents the presents or absence of each
+attribute named along the path to the root node and the resulting outcome for
+the set of decisions.
 
 
