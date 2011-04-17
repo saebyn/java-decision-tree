@@ -2,26 +2,21 @@
  *  
  */
 
-
 package dt;
 
 import java.util.Map;
 
-public interface Algorithm {
 
+public interface Algorithm {
   /**
-   * nextAttribute
+   * Find the next attribute.
    *
-   * Finds the next attribute to add to the tree given the already determined
-   * set of decisions represented by `path`.
-   *
-   * The `path` argument is a mapping of attributes given by the path from the
-   * decision tree root to the current (temporary) leaf, including the leaf itself.
-   *
-   * Throws a YesDecisionLeafException or a NoDecisionLeafException when no further
-   * leaves need to be added for the given path. Otherwise, returns an attribute
-   * id string for the next decision node.
+   * For the initial attribute, pass an empty
+   * chosenAttributes and use the returned attribute as the rootAttribute.
+   * Then, walk the decision tree pre-order. At each decision, call this method
+   * with the attribute/decision pairs that led to that node in 
+   * chosenAttributes. Attach the returned Attribute to the decision.
    *
    */
-  public String nextAttribute(Map<String, Boolean> path) throws DecisionLeafException;
+  abstract public Attribute nextAttribute(Map<String, String> chosenAttributes);
 }
