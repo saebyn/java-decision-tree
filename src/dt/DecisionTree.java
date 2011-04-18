@@ -10,12 +10,13 @@ public class DecisionTree {
   /**
    * Contains the set of available attributes.
    */
-  private Set<String> attributes;
+  private LinkedHashSet<String> attributes;
 
   /**
    * Maps a attribute name to a set of possible decisions for that attribute.
    */
   private Map<String, Set<String> > decisions;
+  private boolean decisionsSpecified;
 
   /**
    * Contains the examples to be processed into a decision tree.
@@ -23,7 +24,7 @@ public class DecisionTree {
    * The 'attributes' and 'decisions' member variables should be updated
    * prior to adding examples that refer to new attributes or decisions.
    */
-  private List<Example> examples;
+  private Examples examples;
 
   /**
    * Indicates if the provided data has been processed into a decision tree.
@@ -46,6 +47,10 @@ public class DecisionTree {
 
   public DecisionTree() {
     algorithm = null;
+    examples = new Examples();
+    attributes = new LinkedHashSet<String>();
+    decisions = new HashMap<String, Set<String> >();
+    decisionsSpecified = false;
   }
 
   private void setDefaultAlgorithm() {
@@ -58,51 +63,113 @@ public class DecisionTree {
   }
 
   /**
-   * Modifies copy of this object and returns it.
-   */
-  public DecisionTree clear() {
-    // don't forget to reset compiled var
-    return this;
-  }
-
-  /**
-   * Modifies copy of this object and returns it.
+   * Saves the array of attribute names in an insertion ordered set.
+   *
+   * The ordering of attribute names is used when addExamples is called to
+   * determine which values correspond with which names.
+   *
    */
   public DecisionTree setAttributes(String[] attributeNames) {
-    // don't forget to reset compiled var
+    compiled = false;
+
+    decisions.clear();
+    decisionsSpecified = false;
+
+    attributes.clear();
+
+    for ( int i = 0 ; i < attributeNames.length ; i++ )
+      attributes.add(attributeNames[i]);
+
     return this;
   }
 
   /**
-   * Modifies copy of this object and returns it.
-   */
-  public DecisionTree addExample(String[] attributeValues, boolean classification) {
-    // don't forget to reset compiled var
-    return this;
-  }
-
-  /**
-   * Modifies copy of this object and returns it.
    */
   public DecisionTree setDecisions(String attributeName, String[] decisions) {
-    // don't forget to reset compiled var
+    if ( !attributes.contains(attributeName) ) {
+      // TODO some kind of warning or something
+      return this;
+    }
+
+    compiled = false;
+    decisionsSpecified = true;
+
+    Set<String> decisionsSet = new HashSet<String>();
+    for ( int i = 0 ; i < decisions.length ; i++ )
+      decisionsSet.add(decisions[i]);
+
+    this.decisions.put(attributeName, decisionsSet);
 
     return this;
   }
 
-  public boolean apply(Map<String, String> data) throws Decisions.BadDecision {
-    if ( !compiled )
-      compile();
+  /**
+   */
+  public DecisionTree addExample(String[] attributeValues, boolean classification) throws UnknownDecisionException {
+    String[] attributes = this.attributes.toArray(new String[0]);
 
-    // rootAttribute could be null, what to do, what to do...
+    if ( decisionsSpecified )
+      for ( int i = 0 ; i < attributeValues.length ; i++ )
+        if ( !decisions.get(attributes[i]).contains(attributeValues[i]) ) {
+          throw new UnknownDecisionException(attributes[i], attributeValues[i]);
+        }
+
+    compiled = false;
+
+    examples.add(attributes, attributeValues, classification);
+    
+    return this;
+  }
+
+  public boolean apply(Map<String, String> data) throws BadDecisionException {
+    compile();
 
     return rootAttribute.apply(data);
   }
 
+  private Attribute compileWalk(Attribute current, Map<String, String> chosenAttributes) {
+    // if the current attribute is a leaf, then there are no decisions and thus no
+    // further attributes to find.
+    if ( current.isLeaf() )
+      return current;
+
+    // get decisions for the current attribute (from this.decisions)
+    String attributeName = current.getName();
+    for ( String decisionName : decisions.get(attributeName) ) {
+      // overwrite the attribute decision for each value considered
+      chosenAttributes.put(attributeName, decisionName);
+
+      // find the next attribute to choose for the considered decision
+      // build the subtree from this new attribute, pre-order
+      // insert the newly-built subtree into the open decision slot
+      current.addDecision(decisionName, compileWalk(algorithm.nextAttribute(chosenAttributes), chosenAttributes));
+    }
+
+    // remove the attribute under consideration before we walk back up the tree.
+    chosenAttributes.remove(attributeName);
+
+    // return the subtree so that it can be inserted into the parent tree.
+    return current;
+  }
+
   private void compile() {
-    // move data from attributes, examples, and decisions into rootAttribute
-    // by using algorithm.
+    // skip compilation if already done.
+    if ( compiled )
+      return;
+
+    // if no algorithm is set beforehand, select the default one.
     setDefaultAlgorithm();
+
+    Map<String, String> chosenAttributes = new HashMap<String, String>();
+
+    if ( !decisionsSpecified )
+      decisions = examples.extractDecisions();
+
+    // find the root attribute (either leaf or non)
+    // walk the tree, adding attributes as needed under each decision
+    // save the original attribute as the root attribute.
+    rootAttribute = compileWalk(algorithm.nextAttribute(chosenAttributes), chosenAttributes);
+
     compiled = true;
   }
 }

@@ -8,9 +8,6 @@ import java.util.*;
 
 
 class Decisions {
-  public class BadDecision extends Exception {
-  }
-
   private Map<String, Attribute> decisions;
 
   public Decisions() {
@@ -28,13 +25,13 @@ class Decisions {
   /**
    * Returns the attribute based on the decision matching the provided value.
    *
-   * Throws BadDecision exception if no decision matches.
+   * Throws BadDecisionException if no decision matches.
    */
-  public Attribute apply(String value) throws BadDecision {
+  public Attribute apply(String value) throws BadDecisionException {
     Attribute result = decisions.get(value);
 
     if ( result == null )
-      throw new BadDecision();
+      throw new BadDecisionException();
 
     return result;
   }

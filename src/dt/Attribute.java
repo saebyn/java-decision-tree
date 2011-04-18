@@ -18,11 +18,21 @@ class Attribute {
   private Decisions decisions;
   private boolean classification;
 
-  public Attribute(String name) {
+  public Attribute(boolean classification) {
     leaf = true;
-    classification = false;
+    this.classification = classification;
     decisions = new Decisions();
+    attributeName = null;
+  }
+
+  public Attribute(String name) {
+    leaf = false;
     attributeName = name;
+    decisions = new Decisions();
+  }
+
+  public String getName() {
+    return attributeName;
   }
 
   public boolean isLeaf() {
@@ -30,10 +40,8 @@ class Attribute {
   }
 
   public void setClassification(boolean classification) {
-    if ( !leaf ) {
-      decisions.clear();
-      leaf = true;
-    }
+    assert ( leaf );
+
     this.classification = classification;
   }
 
@@ -43,10 +51,12 @@ class Attribute {
    * Undefined if isLeaf() returns false.
    */
   public boolean getClassification() {
+    assert ( leaf );
+
     return classification;
   }
 
-  public boolean apply(Map<String, String> data) throws Decisions.BadDecision {
+  public boolean apply(Map<String, String> data) throws BadDecisionException {
     if ( isLeaf() )
       return getClassification();
 
@@ -55,7 +65,8 @@ class Attribute {
   }
 
   public void addDecision(String decision, Attribute attribute) {
-    leaf = false;
+    assert ( !leaf );
+
     decisions.put(decision, attribute);
   }
 }

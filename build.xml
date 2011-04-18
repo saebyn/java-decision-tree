@@ -16,7 +16,7 @@
 
   <target name="compile">
     <mkdir dir="${classes.dir}" />
-    <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" includeantruntime="false" />
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" includeantruntime="false" debug="on" />
   </target>
 
   <target name="jar" depends="compile">
@@ -36,6 +36,8 @@
       </classpath>
 
       <formatter type="xml" />
+
+      <formatter type="plain" usefile="false" />
 
       <batchtest fork="yes" todir="${report.dir}">
         <fileset dir="${src.dir}" includes="*Test.java" />
