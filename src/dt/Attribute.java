@@ -7,7 +7,7 @@ package dt;
 import java.util.*;
 
 
-class Attribute {
+public class Attribute {
   /**
    * Indicates if this attribute yields a classification (true) or has child 
    * decisions that point to further attributes (false).
@@ -68,5 +68,29 @@ class Attribute {
     assert ( !leaf );
 
     decisions.put(decision, attribute);
+  }
+
+  public String toString() {
+    StringBuffer b = new StringBuffer();
+
+    for ( Map.Entry<String, Attribute> e : decisions.getMap().entrySet() ) {
+      b.append(getName());
+      b.append(" -> ");
+      if ( e.getValue().isLeaf() )
+        b.append(e.getValue().getClassification());
+      else
+        b.append(e.getValue().getName());
+      b.append(" [label=\"");
+      b.append(e.getKey());
+      b.append("\"]\n");
+
+      b.append(e.getValue().toString());
+    }
+
+    return b.toString();
+  }
+
+  public Map<String, Attribute> getDecisions() {
+    return decisions.getMap();
   }
 }

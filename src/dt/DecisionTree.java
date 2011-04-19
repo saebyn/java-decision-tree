@@ -127,7 +127,7 @@ public class DecisionTree {
     return rootAttribute.apply(data);
   }
 
-  private Attribute compileWalk(Attribute current, Map<String, String> chosenAttributes) {
+  private Attribute compileWalk(Attribute current, Map<String, String> chosenAttributes, Set<String> usedAttributes) {
     // if the current attribute is a leaf, then there are no decisions and thus no
     // further attributes to find.
     if ( current.isLeaf() )
@@ -135,6 +135,10 @@ public class DecisionTree {
 
     // get decisions for the current attribute (from this.decisions)
     String attributeName = current.getName();
+
+    // remove this attribute from all further consideration
+    usedAttributes.add(attributeName);
+
     for ( String decisionName : decisions.get(attributeName) ) {
       // overwrite the attribute decision for each value considered
       chosenAttributes.put(attributeName, decisionName);
@@ -142,17 +146,17 @@ public class DecisionTree {
       // find the next attribute to choose for the considered decision
       // build the subtree from this new attribute, pre-order
       // insert the newly-built subtree into the open decision slot
-      current.addDecision(decisionName, compileWalk(algorithm.nextAttribute(chosenAttributes), chosenAttributes));
+      current.addDecision(decisionName, compileWalk(algorithm.nextAttribute(chosenAttributes, usedAttributes), chosenAttributes, usedAttributes));
     }
 
-    // remove the attribute under consideration before we walk back up the tree.
+    // remove the attribute decision before we walk back up the tree.
     chosenAttributes.remove(attributeName);
 
     // return the subtree so that it can be inserted into the parent tree.
     return current;
   }
 
-  private void compile() {
+  public void compile() {
     // skip compilation if already done.
     if ( compiled )
       return;
@@ -161,6 +165,7 @@ public class DecisionTree {
     setDefaultAlgorithm();
 
     Map<String, String> chosenAttributes = new HashMap<String, String>();
+    Set<String> usedAttributes = new HashSet<String>();
 
     if ( !decisionsSpecified )
       decisions = examples.extractDecisions();
@@ -168,8 +173,21 @@ public class DecisionTree {
     // find the root attribute (either leaf or non)
     // walk the tree, adding attributes as needed under each decision
     // save the original attribute as the root attribute.
-    rootAttribute = compileWalk(algorithm.nextAttribute(chosenAttributes), chosenAttributes);
+    rootAttribute = compileWalk(algorithm.nextAttribute(chosenAttributes, usedAttributes), chosenAttributes, usedAttributes);
 
     compiled = true;
+  }
+
+  public String toString() {
+    compile();
+
+    if ( rootAttribute != null )
+      return rootAttribute.toString();
+    else
+      return "";
+  }
+
+  public Attribute getRoot() {
+    return rootAttribute;
   }
 }

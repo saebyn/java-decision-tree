@@ -16,13 +16,19 @@ public class ID3Algorithm implements Algorithm {
   /**
    * Returns the next attribute to be chosen.
    *
+   * chosenAttributes represents the decision path from the root attribute
+   * to the node under consideration. usedAttributes is the set of all
+   * attributes that have been incorporated into the tree prior to this
+   * call to nextAttribute(), even if the attributes were not used in the path
+   * to the node under consideration.
+   *
    * Results are undefined if examples.count() == 0.
    */
-  public Attribute nextAttribute(Map<String, String> chosenAttributes) {
+  public Attribute nextAttribute(Map<String, String> chosenAttributes, Set<String> usedAttributes) {
     double currentGain = 0.0, bestGain = 0.0;
     String bestAttribute = "";
 
-    for ( String attribute : remainingAttributes(chosenAttributes) ) {
+    for ( String attribute : remainingAttributes(usedAttributes) ) {
       // for each remaining attribute, determine the information gain of using it
       // to choose among the examples selected by the chosenAttributes
       // if none give any information gain, return a leaf attribute,
@@ -38,15 +44,16 @@ public class ID3Algorithm implements Algorithm {
     // Leaf is true if there are any true classifiers.
     // If there is at least one negative example, then the information gain
     // would be greater than 0.
-    if ( bestGain == 0.0 )
+    if ( bestGain == 0.0 ) {
       return new Attribute(examples.countPositive(chosenAttributes) > 0);
-    else
+    } else {
       return new Attribute(bestAttribute);
+    }
   }
 
-  private Set<String> remainingAttributes(Map<String, String> chosenAttributes) {
+  private Set<String> remainingAttributes(Set<String> usedAttributes) {
     Set<String> result = examples.extractAttributes();
-    result.removeAll(chosenAttributes.keySet());
+    result.removeAll(usedAttributes);
     return result;
   }
 

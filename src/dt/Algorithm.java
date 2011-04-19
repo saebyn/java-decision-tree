@@ -4,7 +4,7 @@
 
 package dt;
 
-import java.util.Map;
+import java.util.*;
 
 
 public interface Algorithm {
@@ -18,5 +18,5 @@ public interface Algorithm {
    * chosenAttributes. Attach the returned Attribute to the decision.
    *
    */
-  abstract public Attribute nextAttribute(Map<String, String> chosenAttributes);
+  abstract public Attribute nextAttribute(Map<String, String> chosenAttributes, Set<String> usedAttributes);
 }
