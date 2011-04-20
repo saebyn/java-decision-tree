@@ -1,4 +1,10 @@
 
+Copyright(c) 2011 John Weaver.
+All Rights Reserved.
+
+Source code licensed under the BSD license. Please see the LICENSE file for details.
+
+
 decision-tree
 =============
 
@@ -11,4 +17,7 @@ binary tree where each leaf node represents the presents or absence of each
 attribute named along the path to the root node and the resulting outcome for
 the set of decisions.
 
+Dependencies
+------------
 
+* Uses SLF4J for logging.
