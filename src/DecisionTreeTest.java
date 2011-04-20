@@ -65,20 +65,17 @@ public class DecisionTreeTest {
 
   public void attributeIsUsedOnlyOnceInTree(Attribute node, List<String> attributes) {
     for ( Attribute child : node.getDecisions().values() ) {
-      assertFalse(attributes.contains(child.getName()));
-      attributes.add(child.getName());
-
-      if ( !child.isLeaf() )
+      if ( !child.isLeaf() ) {
+        assertFalse( attributes.contains(child.getName()) );
+        attributes.add(child.getName());
         attributeIsUsedOnlyOnceInTree(child, attributes);
+      }
     }
   }
 
   @Test public void testAttributeIsUsedOnlyOnceInTree() {
     DecisionTree tree = makeOutlookTree();
     tree.compile();
-
-    // debugging output
-    System.out.println(tree.toString());
 
     List<String> attributeList = new LinkedList<String>();
     attributeList.add(tree.getRoot().getName());
