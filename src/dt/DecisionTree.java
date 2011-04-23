@@ -121,6 +121,14 @@ public class DecisionTree {
     return this;
   }
 
+  public DecisionTree addExample(Map<String, String> attributes, boolean classification) throws UnknownDecisionException {
+    compiled = false;
+
+    examples.add(attributes, classification);
+
+    return this;
+  }
+
   public boolean apply(Map<String, String> data) throws BadDecisionException {
     compile();
 

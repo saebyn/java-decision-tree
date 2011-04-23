@@ -24,6 +24,11 @@ class Examples {
       this.classifier = classifier;
     }
 
+    public Example(Map<String, String> attributes, boolean classifier) {
+      this.classifier = classifier;
+      this.values = attributes;
+    }
+
     public Set<String> getAttributes() {
       return values.keySet();
     }
@@ -46,6 +51,10 @@ class Examples {
   public void add(String[] attributeNames, String[] attributeValues,
                   boolean classifier) {
     examples.add(new Example(attributeNames, attributeValues, classifier));
+  }
+
+  public void add(Map<String, String> attributes, boolean classifier) {
+    examples.add(new Example(attributes, classifier));
   }
 
   /**
